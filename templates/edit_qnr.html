@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load staticfiles %}
+    <meta charset="UTF-8">
+    <title>修改问题</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-3.3.7-dist/css/bootstrap.css' %}">
+    <script src="/static/bootstrap-3.3.7-dist/js/jquery-3.1.1.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+
+    <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <style>
+        .container {
+            margin-top: 50px;
+        }
+
+        .hide {
+            display: none;
+        }
+        ol{
+            padding:0;
+            list-style: none;
+            counter-reset: sectioncounter;
+        }
+        ol > li:before{
+            content: "问题" counter(sectioncounter)':';
+            counter-increment: sectioncounter;
+            font-size: 18px;
+            color: #d4d4d4;
+        }
+        ol > li:nth-of-type(odd){
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<div class="btn btn-success pull-right" id="save">保存</div>
+<div class="btn btn-primary pull-right" id="add" style="margin-right: 10px">添加</div>
+    <div class="row" style="margin-top: 50px">
+        <ol>
+            {% for item in forms %}
+                <li><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <div question_id="{{ item.obj.id }}">
+                        <p>问题:{{ item.form.caption }}</p>
+                        <p>类型:{{ item.form.tp }}<a class="{{ item.option_class }} option_add" >添加选项</a></p>
+                        <ul>
+                            {% for v in item.options %}
+                                <li id="{{ v.obj.id }}">{{ v.form }}<button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </li>
+            {% endfor %}
+        </ol>
+    </div>
+
+
+
+</div>
+<script>
+    //添加选项
+    $(".row").on("click",".option_add",function () {
+        var ul=$(this).parent().next();
+        var s='<li><label>自定义选项:</label><input type="text" name="name" maxlength="128" required=""><label>自定义分数:</label><input type="number" name="value"><button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></li>';
+        ul.append(s)
+    });
+    //更改选项
+    $("ol").on("change","[name='tp']",function () {
+        var now=$(this);
+        var parent=$(this).parent();
+        if ($(this.selectedOptions).val() == 2){
+            now.next().removeClass("hide")
+        }
+        else if (($(this.selectedOptions).val() == 1) ||($(this.selectedOptions).val() == 3)){
+            now.next().addClass("hide");
+            parent.next().text("")
+        }
+    });
+    //删除问题或者选项
+    $(".row").on("click",".close",function () {
+        $(this).parent().remove()
+    });
+
+    //增加新的问题
+    $("#add").click(function () {
+        var has_value=$("ol").children().first().next().clone();
+        has_value.find("input").val("");
+        has_value.find("input").removeAttr("value");
+        has_value.find("select").val("");
+        has_value.find("select option[selected]").removeAttr("selected");
+        has_value.find("ul").empty();
+        has_value.find("div").first().removeAttr("question_id");
+        has_value.find("a").first().addClass("hide");
+        $("ol").append(has_value)
+    })
+</script>
+
+</body>
+</html>

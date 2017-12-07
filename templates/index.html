@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页</title>
+    <link rel="stylesheet" href="/static/bootstrap-3.3.7-dist/css/bootstrap.css">
+    <script src="/static/bootstrap-3.3.7-dist/js/jquery-3.1.1.js"></script>
+    <script src="/static/js/jquery.cookie.js"></script>
+    <script src="/static/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <style>
+        .container{
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <a href="/add_questionnaire/"><button class="btn btn-success">添加</button></a>
+    <table class="table table-responsive" style="margin-top: 20px">
+        <tr>
+            <th>调查问卷名称</th>
+            <th>问卷调查班级</th>
+            <th>参与人数</th>
+            <th>问卷选项</th>
+            <th>调查地址</th>
+            <th>查看评分</th>
+            <th>删除</th>
+        </tr>
+        {% for questionnaire in questionnaire_list %}
+            <tr>
+            <td>{{ questionnaire.title }}</td>
+            <td>{{ questionnaire.class1.name }}</td>
+            <td>{{ questionnaire.number_people}}/{{ questionnaire.class1.population }}</td>
+            <td><a href="/edit_qnr/{{ questionnaire.id }}">编辑问卷</a></td>
+            <td><a href="#">/student/evaluate/{{ questionnaire.class1.id }}/{{ questionnaire.id }}/</a></td>
+            <td><a href="#">查看评分</a></td>
+            <td><a class="del" qnr_id="{{ questionnaire.id }}">删除</a></td>
+            </tr>
+        {% endfor %}
+        
+    </table>
+</div>
+<span class="error"></span>
+<script>
+    $(".container").on("click",".del",function () {
+        var del_parent=$(this).parent().parent();
+        $.ajax({
+            url:"/del_questionnaire/",
+            type:"POST",
+            headers: {"X-CSRFToken": $.cookie('csrftoken')},
+            data:{
+                qnr_id:$(this).attr("qnr_id")
+            },
+            success:function (data) {
+                if (data["error_message"]){
+                    $(".error").val("瞎填你大爷")
+                }
+                else if (data["status"]){
+                    del_parent.remove()
+                }
+            }
+
+        })
+    })
+</script>
+</body>
+</html>

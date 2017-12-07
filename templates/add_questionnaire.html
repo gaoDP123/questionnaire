@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加问卷</title>
+</head>
+<body>
+<form action="" method="post">
+{% csrf_token %}
+    <p><input type="text" name="title"></p>
+    <select name="class1" id="">
+        {% for class1 in classes %}
+        <p><option value="{{ class1.id }}">{{ class1.name }}</option></p>
+        {% endfor %}
+    </select>
+    <br>
+    <select name="creator" id="">
+        {% for user in admin %}
+            <p><option value="{{ user.id }}">{{ user.name }}</option></p>
+        {% endfor %}
+        
+    </select>
+    <input type="submit" value="提交">
+</form>
+</body>
+</html>
